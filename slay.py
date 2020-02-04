@@ -5,7 +5,7 @@ from bs4 import BeautifulSoup
 strike_found = False
 bash_found = False
 
-def find_cards(url):
+def find_items(url):
     response = requests.get(url)
     soup = BeautifulSoup(response.content, 'html.parser')
     table = soup.find('table')
@@ -24,8 +24,8 @@ def get_card(card, class_text=''):
 
     return {
         "name": name,
-        "rarity": rarity,
         "type": card_type,
+        "rarity": rarity,
         "cost": cost,
         "text": text,
     }
@@ -37,7 +37,7 @@ def get_status(card):
 
     return {
         "name": name,
-        "type": "status",
+        "type": "Status",
         "text": text,
     }
 
@@ -48,7 +48,20 @@ def get_curse(card):
 
     return {
         "name": name,
-        "type": "curse",
+        "type": "Curse",
+        "text": text,
+    }
+
+def get_noncard(relic, type):
+    data = relic.find_all('td')
+    name = clean_string(data[1].get_text())
+    rarity = clean_string(data[2].get_text())
+    text = clean_string(data[3].get_text())
+
+    return {
+        "name": name,
+        "type": type,
+        "rarity": rarity,
         "text": text,
     }
 
@@ -64,7 +77,7 @@ items = [
 data = []
 
 for url, character_text in items:
-    cards = find_cards(url)
+    cards = find_items(url)
 
     # [1:] to skip table header
     for card in cards[1:]:
@@ -72,13 +85,26 @@ for url, character_text in items:
         data.append(result)
 
 # Get status cards
-cards = find_cards('https://slay-the-spire.fandom.com/wiki/Status')
+cards = find_items('https://slay-the-spire.fandom.com/wiki/Status')
 for card in cards[1:]:
     result = get_status(card)
     data.append(result)
 
 # Get curses
-cards = find_cards('https://slay-the-spire.fandom.com/wiki/Curse')
+cards = find_items('https://slay-the-spire.fandom.com/wiki/Curse')
 for card in cards[1:]:
     result = get_curse(card)
+    data.append(result)
+
+# Get relics
+relics = find_items('https://slay-the-spire.fandom.com/wiki/Relics')
+for relic in relics[1:]:
+    result = get_noncard(relic, 'Relic')
+    data.append(result)
+
+
+# Get potions
+potions = find_items('https://slay-the-spire.fandom.com/wiki/Potions')
+for potion in potions[1:]:
+    result = get_noncard(potion, 'Potion')
     data.append(result)
