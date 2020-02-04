@@ -3,7 +3,7 @@ import json
 from bs4 import BeautifulSoup
 
 strike_found = False
-bash_found = False
+defend_found = False
 
 def find_items(url):
     response = requests.get(url)
@@ -82,29 +82,38 @@ for url, character_text in items:
     # [1:] to skip table header
     for card in cards[1:]:
         result = get_card(card, character_text)
+
+        if result['name'] == 'Strike':
+            if strike_found:
+                continue
+            else:
+                result['rarity'] = 'Starter'
+                strike_found = True
+
+        if result['name'] == 'Defend':
+            if defend_found: 
+                continue
+            else:
+                result['rarity'] = 'Starter'
+                defend_found = True
         data.append(result)
 
 # Get status cards
 cards = find_items('https://slay-the-spire.fandom.com/wiki/Status')
 for card in cards[1:]:
-    result = get_status(card)
-    data.append(result)
+    data.append(get_status(card))
 
 # Get curses
 cards = find_items('https://slay-the-spire.fandom.com/wiki/Curse')
 for card in cards[1:]:
-    result = get_curse(card)
-    data.append(result)
+    data.append(get_curse(card))
 
 # Get relics
 relics = find_items('https://slay-the-spire.fandom.com/wiki/Relics')
 for relic in relics[1:]:
-    result = get_noncard(relic, 'Relic')
-    data.append(result)
-
+    data.append(get_noncard(relic, 'Relic'))
 
 # Get potions
 potions = find_items('https://slay-the-spire.fandom.com/wiki/Potions')
 for potion in potions[1:]:
-    result = get_noncard(potion, 'Potion')
-    data.append(result)
+    data.append(get_noncard(potion, 'Potion'))
