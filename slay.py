@@ -117,3 +117,7 @@ for relic in relics[1:]:
 potions = find_items('https://slay-the-spire.fandom.com/wiki/Potions')
 for potion in potions[1:]:
     data.append(get_noncard(potion, 'Potion'))
+
+# Write to file
+with open('slaydata.json', 'w') as file:
+    file.write(json.dumps(data, indent=2))
