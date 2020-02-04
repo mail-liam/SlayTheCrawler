@@ -29,6 +29,7 @@ items = [
     ('https://slay-the-spire.fandom.com/wiki/Silent_Cards', ' (Silent only)'),
     ('https://slay-the-spire.fandom.com/wiki/Defect_Cards', ' (Defect only)'),
     ('https://slay-the-spire.fandom.com/wiki/Watcher_Cards', ' (Watcher only)'),
+    ('https://slay-the-spire.fandom.com/wiki/Colorless_Cards', ' (Colourless)'),
 ]
 
 data = []
@@ -42,7 +43,3 @@ for url, character_text in items:
     for card in cards[1:]:
         result = get_card(card, character_text)
         data.append(result)
-
-
-
-
